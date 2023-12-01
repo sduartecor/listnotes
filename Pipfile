@@ -7,7 +7,7 @@ verify_ssl = true
 
 [packages]
 flask = "*"
-sqlalchemy = "*"
+sqlalchemy = "==1.4.46"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
 flask-swagger = "*"
@@ -19,7 +19,7 @@ cloudinary = "*"
 flask-admin = "*"
 typing-extensions = "*"
 colorama = "*"
-flask-sqlaclhemy = "*"
+flask-jwt-extended = "*"
 
 [requires]
 python_version = "3.10"

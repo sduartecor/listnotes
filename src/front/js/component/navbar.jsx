@@ -1,8 +1,17 @@
-import React from "react";
-import { Context } from "../store/appContext";
-import { Link } from "react-router-dom";
+import React, { useState, useContext, useEffect } from "react";
+import { Context } from "../store/appContext.js";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
+  const { store, actions } = useContext(Context);
+  const location = useLocation();
+  let navigate = useNavigate();
+
+  function handleLogout() {
+    actions.logout(); // cerrar la sesion
+    navigate("/"); // usamos navigate para redireccionar
+  }
+
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
@@ -36,17 +45,57 @@ export const Navbar = () => {
             </li>
           </ul>
           <form className="d-flex">
-            <button
-              type="button"
-              className="btn btn-outline-dark mx-3 btn-lg shadow-sm"
-            >
-              <i className="fa fa-sign-in-alt mx-2"></i>
-              Log In
-            </button>
-            <button type="button" className="btn btn-dark btn-lg shadow-sm">
-              <i className="fa fa-user-plus mx-2"></i>
-              Sign Up
-            </button>
+            {store.auth === false && !location.pathname.includes("/login") ? (
+              <Link to="/login">
+                <button
+                  type="button"
+                  className="btn btn-outline-dark mx-3 btn-lg shadow-sm"
+                >
+                  <i className="fa fa-sign-in-alt mx-2"></i>
+                  Log in
+                </button>
+              </Link>
+            ) : null}
+            {store.auth === false &&
+            !location.pathname.includes("/register") ? (
+              <Link to="/register">
+                <button type="button" className="btn btn-dark btn-lg shadow-sm">
+                  <i className="fa fa-user-plus mx-2"></i>
+                  Sign up
+                </button>
+              </Link>
+            ) : null}
+
+            {/*  */}
+
+            {store.auth === true ? (
+              <li className="nav-item d-none d-lg-block d-xl-block">
+                <div className="dropdown d-flex float-end ms-3">
+                  <button
+                    className="btn btn-outline-dark btn-lg dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <i className="fa fa-user mx-2"></i>
+                    {store.profile.firstname}
+                  </button>
+                  <ul className="dropdown-menu dropdown-menu-end">
+                    <Link to={"/profile"}>
+                      <button className="dropdown-item float-start">
+                        Mi perfil
+                      </button>
+                    </Link>
+                    <button
+                      className="dropdown-item float-start text-danger"
+                      onClick={handleLogout}
+                    >
+                      Cerrar sesión
+                    </button>
+                  </ul>
+                </div>
+              </li>
+            ) : null}
           </form>
         </div>
       </div>
