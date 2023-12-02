@@ -70,9 +70,38 @@ export const Archived = () => {
                   key={id}
                   className="list-group-item d-flex justify-content-between align-items-center rounded my-2 border border-black"
                   onClick={() => handleNoteClick(item)}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer", position: "relative" }}
                 >
                   <pre className="fs-5 mb-0">{item.content}</pre>
+
+                  {/*  */}
+                  {item.categories && item.categories.length > 0 && (
+                    <div
+                      className="category-circles"
+                      style={{
+                        position: "absolute",
+                        top: "50%",
+                        right: "-1px",
+                        transform: "translateY(-50%)",
+                        display: "flex",
+                      }}
+                    >
+                      {item.categories.map((category, index) => (
+                        <div
+                          key={index}
+                          className="circle"
+                          style={{
+                            width: "12px",
+                            height: "12px",
+                            borderRadius: "50%",
+                            backgroundColor: category.color,
+                            marginRight: "5px",
+                          }}
+                        ></div>
+                      ))}
+                    </div>
+                  )}
+                  {/*  */}
                 </li>
               ))
             ) : (
@@ -122,7 +151,7 @@ export const Archived = () => {
                   component="div"
                   className="invalid-feedback"
                 />
-                <div className="my-2 d-flex">
+                <div className="my-2 d-flex justify-content-center">
                   <Button type="submit" variant="primary" className="me-2">
                     Update
                   </Button>
@@ -131,7 +160,7 @@ export const Archived = () => {
                     className="me-2"
                     onClick={() => handleArchiveNote(selectedNote)}
                   >
-                    Unarchived
+                    Unarchive
                   </Button>
                   <Button
                     variant="danger"
@@ -143,6 +172,52 @@ export const Archived = () => {
                   <Button variant="secondary" onClick={handleCloseModal}>
                     Cancel
                   </Button>
+                </div>
+
+                {/* Dentro del modal, donde se muestran las categorías */}
+                <div>
+                  {Array.isArray(store.categoryList) &&
+                  store.categoryList.length > 0 ? (
+                    store.categoryList
+                      .filter((category) => {
+                        console.log(
+                          "selectedNote.categories:",
+                          selectedNote.categories
+                        );
+                        console.log("category:", category);
+
+                        const isCategoryAlreadyAdded =
+                          selectedNote.categories &&
+                          selectedNote.categories.some(
+                            (noteCategory) => noteCategory.id === category.id
+                          );
+
+                        console.log(
+                          "isCategoryAlreadyAdded:",
+                          isCategoryAlreadyAdded
+                        );
+
+                        return !isCategoryAlreadyAdded;
+                      })
+                      .map((category, id) => (
+                        <li
+                          key={id}
+                          className="list-group-item d-flex justify-content-between align-items-center rounded my-2"
+                          style={{
+                            border: `2px solid ${category.color}`,
+                            cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            addNoteCategory(selectedNote.id, category.id);
+                            console.log("Adding category to note:", category);
+                          }}
+                        >
+                          <pre className="fs-5 mb-0">{category.name}</pre>
+                        </li>
+                      ))
+                  ) : (
+                    <p className="text-center">No hay categorías disponibles</p>
+                  )}
                 </div>
               </Form>
             )}

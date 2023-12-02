@@ -9,6 +9,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       profile: {},
       notesActive: [],
       notesArchived: [],
+      categoryList: [],
     },
     actions: {
       // Use getActions to call a function within a fuction
@@ -121,6 +122,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           profile: {},
           notesActive: [],
           notesArchived: [],
+          categoryList: [],
         });
       },
       getNotesActive: async () => {
@@ -392,6 +394,102 @@ const getState = ({ getStore, getActions, setStore }) => {
           return false;
         }
       },
+      createCategory: async (name, user_id, color) => {
+        try {
+          const response = await axios.post(
+            process.env.BACKEND_URL + "/api/category",
+            {
+              name: name,
+              user_id: user_id,
+              color: color,
+            },
+            {
+              headers: {
+                "Access-Control-Allow-Origin": "*",
+              },
+            }
+          );
+
+          if (response.data.msg === "La categoria fue creada con exito") {
+            Swal.fire({
+              icon: "success",
+              title: "¡Categoria creada!",
+              text: "La categoria se ha creado exitosamente.",
+            });
+          }
+          return response.data.msg;
+        } catch (error) {
+          if (error.response.status === 400) {
+            Swal.fire({
+              icon: "error",
+              title: "¡Algo anduvo mal!",
+              text: error.response.data.msg,
+            });
+          }
+        }
+      },
+      getCategory: async () => {
+        let accessToken = localStorage.getItem("token");
+        try {
+          const response = await axios.get(
+            process.env.BACKEND_URL + "/api/category",
+
+            {
+              headers: {
+                "Access-Control-Allow-Origin": "*",
+                Authorization: "Bearer " + accessToken,
+              },
+            }
+          );
+          if (response.data != null) {
+            setStore({
+              categoryList: response.data,
+            });
+          }
+          return;
+        } catch (e) {
+          return false;
+        }
+      },
+      addNoteCategory: async (note_id, category_id) => {
+        let accessToken = localStorage.getItem("token");
+        try {
+          const response = await axios.post(
+            process.env.BACKEND_URL + "/api/category/note",
+            {
+              note_id: note_id,
+              category_id: category_id,
+            },
+            {
+              headers: {
+                "Access-Control-Allow-Origin": "*",
+                Authorization: "Bearer " + accessToken,
+              },
+            }
+          );
+
+          if (
+            response.data.msg === "Nota vinculada a la categoría exitosamente."
+          ) {
+            Swal.fire({
+              icon: "success",
+              title: "¡Nota creada!",
+              text: "La categoria se ha asignado exitosamente.",
+            });
+          }
+          return response.data.msg;
+        } catch (error) {
+          if (error.response.status === 400) {
+            Swal.fire({
+              icon: "error",
+              title: "¡Algo anduvo mal!",
+              text: error.response.data.msg,
+            });
+          }
+        }
+      },
+
+      //
     },
   };
 };

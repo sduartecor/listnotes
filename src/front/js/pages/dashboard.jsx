@@ -4,6 +4,7 @@ import { Context } from "../store/appContext";
 import "../../styles/home.css";
 import { Notes } from "../pages/notes.jsx";
 import { Archived } from "../pages/archived.jsx";
+import { Category } from "../pages/category.jsx";
 import { Navigate } from "react-router-dom";
 
 export const Dashboard = () => {
@@ -13,6 +14,7 @@ export const Dashboard = () => {
     // Llama a las funciones para obtener las notas cuando el componente se monta
     actions.getNotesActive();
     actions.getNotesArchived();
+    actions.getCategory();
   }, []);
 
   return (
@@ -92,7 +94,7 @@ export const Dashboard = () => {
           aria-labelledby="contact-tab"
           tabIndex={0}
         >
-          ...
+          <Category />
         </div>
       </div>
     </div>

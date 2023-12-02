@@ -30,6 +30,7 @@ const injectContext = (PassedComponent) => {
        **/
       state.actions.getNotesActive();
       state.actions.getNotesArchived();
+      state.actions.getCategory();
       if (localStorage.getItem("token") != null) {
         state.actions.validToken();
       }

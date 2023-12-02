@@ -214,4 +214,66 @@ def delete_note(note_id):
         "msg": "La nota fue eliminada con éxito"
     }
     return jsonify(response_body), 200
+
+# Category
     
+# Create Notes
+@api.route('/category', methods=['POST'])
+def create_category():
+    # Obtener datos de la solicitud JSON
+    name = request.json.get('name')
+    user_id = request.json.get('user_id')
+    color = request.json.get('color')
+
+    # Crear la nota
+    new_category = Category(name=name, user_id=user_id, color=color)
+
+    # Agregar la nota a la base de datos
+    db.session.add(new_category)
+    db.session.commit()
+
+    response_body = {
+            "msg": "La categoria fue creada con exito"
+    }
+    return jsonify(response_body), 200
+
+# Get Notes Active for the authenticated user
+@api.route('/category', methods=['GET'])
+@jwt_required()
+def getCategory():
+    current_user_id = get_jwt_identity()  # Obtén el ID del usuario autenticado
+
+    categorys = Category.query.filter_by(user_id=current_user_id).all()
+    all_category = list(map(lambda item: item.serialize(), categorys))
+
+    return jsonify(all_category), 200
+
+# Add category to note
+@api.route('/category/note', methods=['POST'])
+@jwt_required()
+def categoryNote():
+    current_user_id = get_jwt_identity()
+
+    # Asegurarse de que la solicitud contenga los datos necesarios
+    data = request.get_json()
+    note_id = data.get('note_id')
+    category_id = data.get('category_id')
+
+    if not note_id or not category_id:
+        return jsonify({"mensaje": "Se requieren tanto 'note_id' como 'category_id'."}), 400
+
+    # Verificar si la nota y la categoría existen y pertenecen al usuario actual
+    note = Note.query.filter_by(id=note_id, user_id=current_user_id).first()
+    category = Category.query.filter_by(id=category_id, user_id=current_user_id).first()
+
+    if not note or not category:
+        return jsonify({"mensaje": "Nota o categoría no encontrada o no pertenece al usuario."}), 404
+
+    # Vincular la nota a la categoría
+    note.categories.append(category)
+    db.session.commit()
+
+    response_body = {
+            "msg": "Nota vinculada a la categoría exitosamente."
+    }
+    return jsonify(response_body), 200
