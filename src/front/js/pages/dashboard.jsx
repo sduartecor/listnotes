@@ -3,10 +3,17 @@ import PropTypes from "prop-types";
 import { Context } from "../store/appContext";
 import "../../styles/home.css";
 import { Notes } from "../pages/notes.jsx";
+import { Archived } from "../pages/archived.jsx";
 import { Navigate } from "react-router-dom";
 
 export const Dashboard = () => {
   const { store, actions } = useContext(Context);
+
+  useEffect(() => {
+    // Llama a las funciones para obtener las notas cuando el componente se monta
+    actions.getNotesActive();
+    actions.getNotesArchived();
+  }, []);
 
   return (
     <div className="container-fluid">
@@ -76,7 +83,7 @@ export const Dashboard = () => {
           aria-labelledby="profile-tab"
           tabIndex={0}
         >
-          ...
+          <Archived />
         </div>
         <div
           className="tab-pane fade"

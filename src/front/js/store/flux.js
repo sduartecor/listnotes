@@ -8,6 +8,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       auth: false,
       profile: {},
       notesActive: [],
+      notesArchived: [],
     },
     actions: {
       // Use getActions to call a function within a fuction
@@ -117,21 +118,49 @@ const getState = ({ getStore, getActions, setStore }) => {
         localStorage.removeItem("token");
         setStore({
           auth: false,
+          profile: {},
+          notesActive: [],
+          notesArchived: [],
         });
       },
       getNotesActive: async () => {
+        let accessToken = localStorage.getItem("token");
         try {
           const response = await axios.get(
             process.env.BACKEND_URL + "/api/noteActive",
+
             {
               headers: {
                 "Access-Control-Allow-Origin": "*",
+                Authorization: "Bearer " + accessToken,
               },
             }
           );
           if (response.data != null) {
             setStore({
               notesActive: response.data,
+            });
+          }
+          return;
+        } catch (e) {
+          return false;
+        }
+      },
+      getNotesArchived: async () => {
+        let accessToken = localStorage.getItem("token");
+        try {
+          const response = await axios.get(
+            process.env.BACKEND_URL + "/api/noteArchived",
+            {
+              headers: {
+                "Access-Control-Allow-Origin": "*",
+                Authorization: "Bearer " + accessToken,
+              },
+            }
+          );
+          if (response.data != null) {
+            setStore({
+              notesArchived: response.data,
             });
           }
           return;
@@ -198,6 +227,149 @@ const getState = ({ getStore, getActions, setStore }) => {
               icon: "success",
               title: "¡Bien hecho!",
               text: "Nota archivada con éxito",
+            });
+
+            return true;
+          } else {
+            console.error(`Error ${response.status}: ${response.statusText}`);
+            Swal.fire({
+              icon: "error",
+              title: "¡Algo anduvo mal!",
+              text: `Error ${response.status}: ${response.statusText}`,
+            });
+            return false;
+          }
+        } catch (err) {
+          console.error("Error en la solicitud:", err);
+          Swal.fire({
+            icon: "error",
+            title: "¡Algo anduvo mal!",
+            text: "Error en la solicitud",
+          });
+          return false;
+        }
+      },
+      unarchiveNote: async (noteId) => {
+        try {
+          const response = await axios.put(
+            `${process.env.BACKEND_URL}/api/note/${noteId}/unarchived`,
+            {}, // Agrega las opciones directamente aquí
+            {
+              headers: {
+                "Access-Control-Allow-Origin": "*",
+              },
+            }
+          );
+
+          if (response.status === 200) {
+            const updatedNote = response.data; // No necesitas await response.json()
+            setStore((prevStore) => ({
+              ...prevStore,
+              notesArchived: prevStore.notesArchived.map((note) =>
+                note.id === updatedNote.id ? updatedNote : note
+              ),
+            }));
+
+            Swal.fire({
+              icon: "success",
+              title: "¡Bien hecho!",
+              text: "Nota archivada con éxito",
+            });
+
+            return true;
+          } else {
+            console.error(`Error ${response.status}: ${response.statusText}`);
+            Swal.fire({
+              icon: "error",
+              title: "¡Algo anduvo mal!",
+              text: `Error ${response.status}: ${response.statusText}`,
+            });
+            return false;
+          }
+        } catch (err) {
+          console.error("Error en la solicitud:", err);
+          Swal.fire({
+            icon: "error",
+            title: "¡Algo anduvo mal!",
+            text: "Error en la solicitud",
+          });
+          return false;
+        }
+      },
+      updateNote: async (noteId, content) => {
+        try {
+          const response = await axios.put(
+            `${process.env.BACKEND_URL}/api/note/${noteId}`,
+            {
+              content,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+              },
+            }
+          );
+
+          if (response.status === 200) {
+            const updatedNote = response.data;
+            setStore((prevStore) => ({
+              ...prevStore,
+              notesActive: prevStore.notesActive.map((note) =>
+                note.id === updatedNote.id ? updatedNote : note
+              ),
+            }));
+
+            Swal.fire({
+              icon: "success",
+              title: "¡Bien hecho!",
+              text: "Nota actualizada con éxito",
+            });
+
+            return true;
+          } else {
+            console.error(`Error ${response.status}: ${response.statusText}`);
+            Swal.fire({
+              icon: "error",
+              title: "¡Algo anduvo mal!",
+              text: `Error ${response.status}: ${response.statusText}`,
+            });
+            return false;
+          }
+        } catch (err) {
+          console.error("Error en la solicitud:", err);
+          Swal.fire({
+            icon: "error",
+            title: "¡Algo anduvo mal!",
+            text: "Error en la solicitud",
+          });
+          return false;
+        }
+      },
+      deleteNote: async (noteId) => {
+        try {
+          const response = await axios.delete(
+            `${process.env.BACKEND_URL}/api/note/${noteId}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+              },
+            }
+          );
+
+          if (response.status === 200) {
+            setStore((prevStore) => ({
+              ...prevStore,
+              notesActive: prevStore.notesActive.filter(
+                (note) => note.id !== noteId
+              ),
+            }));
+
+            Swal.fire({
+              icon: "success",
+              title: "¡Bien hecho!",
+              text: "Nota eliminada con éxito",
             });
 
             return true;

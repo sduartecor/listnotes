@@ -34,15 +34,7 @@ export const Navbar = () => {
         </button>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className="nav-item">
-              <a
-                className="nav-link active text-dark"
-                aria-current="page"
-                href="#"
-              >
-                Home
-              </a>
-            </li>
+            <li className="nav-item"></li>
           </ul>
           <form className="d-flex">
             {store.auth === false && !location.pathname.includes("/login") ? (
@@ -51,7 +43,7 @@ export const Navbar = () => {
                   type="button"
                   className="btn btn-outline-dark mx-3 btn-lg shadow-sm"
                 >
-                  <i className="fa fa-sign-in-alt mx-2"></i>
+                  <i className="fa fa-sign-in-alt me-2"></i>
                   Log in
                 </button>
               </Link>
@@ -60,7 +52,7 @@ export const Navbar = () => {
             !location.pathname.includes("/register") ? (
               <Link to="/register">
                 <button type="button" className="btn btn-dark btn-lg shadow-sm">
-                  <i className="fa fa-user-plus mx-2"></i>
+                  <i className="fa fa-user-plus me-2"></i>
                   Sign up
                 </button>
               </Link>

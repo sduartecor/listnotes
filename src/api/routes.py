@@ -62,7 +62,7 @@ def login():
         return jsonify({"msg": "Bad email or password"}), 401
     # Grants a token if login was successful
     else:
-        access_token = create_access_token(identity=email)
+        access_token = create_access_token(identity=user.id)
             # Shows the token and the user info
         return jsonify({"msg": access_token,"user": user.serialize()}), 200
 
@@ -72,7 +72,7 @@ def login():
 def valid_token():
     # Access the identity of the current user with get_jwt_identity
     current_user = get_jwt_identity()
-    user = User.query.filter_by(email=current_user).first()
+    user = User.query.filter_by(id=current_user).first()
     # Same as login, if the query brings nothing then it doesn't exist
 
     if current_user is None:
@@ -85,20 +85,24 @@ def valid_token():
 
 # NOTAS
 
-# Get Notes Active
+# Get Notes Active for the authenticated user
 @api.route('/noteActive', methods=['GET'])
+@jwt_required()
 def getNotesActive():
+    current_user_id = get_jwt_identity()  # Obtén el ID del usuario autenticado
 
-    notes = Note.query.filter_by(archived=False).all() 
+    notes = Note.query.filter_by(user_id=current_user_id, archived=False).all()
     all_notes = list(map(lambda item: item.serialize(), notes))
 
     return jsonify(all_notes), 200
 
-# Get Notes Archived
+# Get Notes Archived for the authenticated user
 @api.route('/noteArchived', methods=['GET'])
+@jwt_required()
 def getNotesArchived():
+    current_user_id = get_jwt_identity()  # Obtén el ID del usuario autenticado
 
-    notes = Note.query.filter_by(archived=True).all() 
+    notes = Note.query.filter_by(user_id=current_user_id, archived=True).all()
     all_notes = list(map(lambda item: item.serialize(), notes))
 
     return jsonify(all_notes), 200
@@ -147,4 +151,67 @@ def archivedNote(note_id):
     
     return jsonify(response_body), 400
 
+@api.route('/note/<int:note_id>/unarchived', methods=['PUT'])
+def unarchivedNote(note_id):
+    body = json.loads(request.data)
+
+    note = Note.query.filter_by(id=note_id).first()
+    
+    if note is not None:
+        note.archived = False
+        
+        db.session.add(note)
+        db.session.commit()
+
+        response_body = {
+            "msg": "La nota fue archivada con exito"
+        }
+        return jsonify(response_body), 200
+    
+    response_body = {
+            "msg": "La nota no existe en el sistema"
+    }
+    
+    return jsonify(response_body), 400
+
+@api.route('/note/<int:note_id>', methods=['PUT'])
+def update_note(note_id):
+    # Obtener datos de la solicitud JSON
+    content = request.json.get('content')
+
+    # Obtener la nota existente por ID
+    note = Note.query.get(note_id)
+
+    # Verificar si la nota existe
+    if not note:
+        return jsonify({"error": "La nota no existe"}), 404
+
+    # Actualizar la nota
+    note.content = content if content is not None else note.content
+
+    # Guardar los cambios en la base de datos
+    db.session.commit()
+
+    response_body = {
+        "msg": "La nota fue actualizada con éxito"
+    }
+    return jsonify(response_body), 200
+
+@api.route('/note/<int:note_id>', methods=['DELETE'])
+def delete_note(note_id):
+    # Obtener la nota existente por ID
+    note = Note.query.get(note_id)
+
+    # Verificar si la nota existe
+    if not note:
+        return jsonify({"error": "La nota no existe"}), 404
+
+    # Eliminar la nota de la base de datos
+    db.session.delete(note)
+    db.session.commit()
+
+    response_body = {
+        "msg": "La nota fue eliminada con éxito"
+    }
+    return jsonify(response_body), 200
     
