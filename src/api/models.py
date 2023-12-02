@@ -43,9 +43,9 @@ class User(db.Model):
 
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    content = db.Column(db.Text, nullable=False)
+    content = db.Column(db.String(250), unique=False, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    archived = db.Column(db.Boolean, default=False, nullable=False)
     
     # Establish a many-to-many relationship between notes and categories
     categories = db.relationship('Category', secondary=note_category_association, backref='notes', lazy='dynamic')
@@ -53,10 +53,10 @@ class Note(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "title": self.title,
             "content": self.content,
             "user_id": self.user_id,
-            "categories": [category.name for category in self.categories]
+            "archived": self.archived, 
+           
         }
 
 class Category(db.Model):

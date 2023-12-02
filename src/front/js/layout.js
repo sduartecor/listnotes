@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 
 import { Home } from "./pages/home.jsx";
+import { Dashboard } from "./pages/dashboard.jsx";
 import { Notes } from "./pages/notes.jsx";
 import { Login } from "./pages/login.jsx";
 import { Register } from "./pages/register.jsx";
@@ -24,7 +25,7 @@ const Layout = () => {
           <Navbar />
           <Routes>
             <Route element={<Home />} path="/" />
-            <Route element={<Notes />} path="/notes" />
+            <Route element={<Dashboard />} path="/dashboard" />
             <Route element={<Login />} path="/login" />
             <Route element={<Register />} path="/register" />
             <Route element={<h1>Not found!</h1>} />

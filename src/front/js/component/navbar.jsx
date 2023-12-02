@@ -67,7 +67,22 @@ export const Navbar = () => {
             ) : null}
 
             {/*  */}
-
+            {store.auth === true &&
+            !location.pathname.includes("/dashboard") ? (
+              <div className="d-flex float-end">
+                <Link to={"/dashboard"}>
+                  <button
+                    className="btn btn-outline-primary btn-lg"
+                    type="button"
+                    aria-expanded="false"
+                  >
+                    <i className="fa fa-plus-circle mx-2"></i>
+                    DASHBOARD
+                  </button>
+                </Link>
+              </div>
+            ) : null}
+            {/*  */}
             {store.auth === true ? (
               <li className="nav-item d-none d-lg-block d-xl-block">
                 <div className="dropdown d-flex float-end ms-3">

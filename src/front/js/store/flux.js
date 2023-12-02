@@ -7,6 +7,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       message: null,
       auth: false,
       profile: {},
+      notesActive: [],
     },
     actions: {
       // Use getActions to call a function within a fuction
@@ -59,7 +60,6 @@ const getState = ({ getStore, getActions, setStore }) => {
               contact: contact,
               firstname: firstname,
               lastname: lastname,
-              admin: false,
             },
             {
               headers: {
@@ -118,6 +118,107 @@ const getState = ({ getStore, getActions, setStore }) => {
         setStore({
           auth: false,
         });
+      },
+      getNotesActive: async () => {
+        try {
+          const response = await axios.get(
+            process.env.BACKEND_URL + "/api/noteActive",
+            {
+              headers: {
+                "Access-Control-Allow-Origin": "*",
+              },
+            }
+          );
+          if (response.data != null) {
+            setStore({
+              notesActive: response.data,
+            });
+          }
+          return;
+        } catch (e) {
+          return false;
+        }
+      },
+      createNote: async (content, user_id, archived) => {
+        try {
+          const response = await axios.post(
+            process.env.BACKEND_URL + "/api/note",
+            {
+              content: content,
+              user_id: user_id,
+              archived: archived,
+            },
+            {
+              headers: {
+                "Access-Control-Allow-Origin": "*",
+              },
+            }
+          );
+
+          if (response.data.msg === "La nota fue creada con exito") {
+            Swal.fire({
+              icon: "success",
+              title: "¡Nota creada!",
+              text: "La nota se ha creado exitosamente.",
+            });
+          }
+          return response.data.msg;
+        } catch (error) {
+          if (error.response.status === 400) {
+            Swal.fire({
+              icon: "error",
+              title: "¡Algo anduvo mal!",
+              text: error.response.data.msg,
+            });
+          }
+        }
+      },
+      archiveNote: async (noteId) => {
+        try {
+          const response = await axios.put(
+            `${process.env.BACKEND_URL}/api/note/${noteId}/archived`,
+            {}, // Agrega las opciones directamente aquí
+            {
+              headers: {
+                "Access-Control-Allow-Origin": "*",
+              },
+            }
+          );
+
+          if (response.status === 200) {
+            const updatedNote = response.data; // No necesitas await response.json()
+            setStore((prevStore) => ({
+              ...prevStore,
+              notesActive: prevStore.notesActive.map((note) =>
+                note.id === updatedNote.id ? updatedNote : note
+              ),
+            }));
+
+            Swal.fire({
+              icon: "success",
+              title: "¡Bien hecho!",
+              text: "Nota archivada con éxito",
+            });
+
+            return true;
+          } else {
+            console.error(`Error ${response.status}: ${response.statusText}`);
+            Swal.fire({
+              icon: "error",
+              title: "¡Algo anduvo mal!",
+              text: `Error ${response.status}: ${response.statusText}`,
+            });
+            return false;
+          }
+        } catch (err) {
+          console.error("Error en la solicitud:", err);
+          Swal.fire({
+            icon: "error",
+            title: "¡Algo anduvo mal!",
+            text: "Error en la solicitud",
+          });
+          return false;
+        }
       },
     },
   };
