@@ -23,6 +23,8 @@ services:
           property: connectionString
       - key: FLASK_APP_KEY
         value: any key works
+      - key: BACKEND_URL
+        value: http://0.0.0.0:3001
 
 databases: # Render PostgreSQL database
   - name: postgresql-trapezoidal-42170
