@@ -11,6 +11,7 @@ export const Notes = () => {
   const isComponentMounted = useRef(true); // Ref para verificar si el componente está montado
   const [showModal, setShowModal] = useState(false);
   const [selectedNote, setSelectedNote] = useState(null);
+  const [showModalCategory, setShowModalCategory] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -31,6 +32,14 @@ export const Notes = () => {
   const handleNoteClick = (note) => {
     setSelectedNote(note);
     setShowModal(true); // Muestra el modal al hacer clic en una nota
+  };
+
+  const handleCloseModalCategory = () => {
+    setShowModalCategory(false);
+  };
+
+  const handleCategoryButton = () => {
+    setShowModalCategory(true); // Muestra el modal al hacer clic en una nota
   };
 
   const handleCloseModal = () => {
@@ -81,12 +90,6 @@ export const Notes = () => {
 
   const addNoteCategory = async (note_id, category_id) => {
     try {
-      console.log(
-        "Adding category to note. Note ID:",
-        note_id,
-        "Category ID:",
-        category_id
-      );
       await actions.addNoteCategory(note_id, category_id);
       actions.getNotesActive();
       setShowModal(false);
@@ -95,60 +98,93 @@ export const Notes = () => {
     }
   };
 
+  const handleRemoveCategory = async (noteId, categoryId) => {
+    try {
+      await actions.deleteNoteCategory(noteId, categoryId);
+      actions.getNotesActive();
+      setShowModal(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleNotesCategory = async (categoryId) => {
+    try {
+      await actions.getNotesCategory(categoryId);
+      setShowModalCategory(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="container sizeAuto d-flex align-items-center">
       <div className="w-50 h-100 my-5 mx-auto card shadow-lg rounded">
-        <div className="card-header">
-          <h3 className="card-title text-center">List</h3>
+        <div className="card-header d-flex">
+          <button
+            type="button"
+            className="btn btn-info mx-1 border-0 w-50"
+            onClick={() => handleCategoryButton()}
+          >
+            List for category
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary mx-1 border-0 w-50"
+            onClick={() => actions.getNotesActive()}
+          >
+            List all notes
+          </button>
         </div>
-        <div className="card-body">
-          <div className="card-body">
-            {Array.isArray(store.notesActive) &&
-            store.notesActive.length > 0 ? (
-              store.notesActive.map((item, id) => (
-                <li
-                  key={id}
-                  className="list-group-item d-flex justify-content-between align-items-center rounded my-2 border border-black"
-                  onClick={() => handleNoteClick(item)}
-                  style={{ cursor: "pointer", position: "relative" }}
-                >
-                  <pre className="fs-5 mb-0">{item.content}</pre>
+        <div className="card-body scrollBar">
+          {Array.isArray(store.notesActive) && store.notesActive.length > 0 ? (
+            store.notesActive.map((item, id) => (
+              <li
+                key={id}
+                className="list-group-item d-flex justify-content-between align-items-center rounded my-2 border border-black"
+                onClick={() => handleNoteClick(item)}
+                style={{ cursor: "pointer", position: "relative" }}
+              >
+                <pre className="fs-5 mb-0">{item.content}</pre>
 
-                  {/*  */}
-                  {item.categories && item.categories.length > 0 && (
-                    <div
-                      className="category-circles"
-                      style={{
-                        position: "absolute",
-                        top: "50%",
-                        right: "-1px",
-                        transform: "translateY(-50%)",
-                        display: "flex",
-                      }}
-                    >
-                      {item.categories.map((category, index) => (
-                        <div
-                          key={index}
-                          className="circle"
-                          style={{
-                            width: "12px",
-                            height: "12px",
-                            borderRadius: "50%",
-                            backgroundColor: category.color,
-                            marginRight: "5px",
-                          }}
-                        ></div>
-                      ))}
-                    </div>
-                  )}
-                  {/*  */}
-                </li>
-              ))
-            ) : (
-              <p className="text-center">No hay notas disponibles</p>
-            )}
-          </div>
+                {/*  */}
+                {item.categories && item.categories.length > 0 && (
+                  <div
+                    className="category-circles"
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      right: "-1px",
+                      transform: "translateY(-50%)",
+                      display: "flex",
+                    }}
+                  >
+                    {item.categories.map((category, index) => (
+                      <div
+                        key={index}
+                        className="circle"
+                        style={{
+                          width: "12px",
+                          height: "12px",
+                          borderRadius: "50%",
+                          backgroundColor: category.color,
+                          marginRight: "5px",
+                        }}
+                        onClick={() =>
+                          handleRemoveCategory(item.id, category.id)
+                        }
+                      ></div>
+                    ))}
+                  </div>
+                )}
+                {/*  */}
+              </li>
+            ))
+          ) : (
+            <p className="text-center">No hay notas disponibles</p>
+          )}
         </div>
+
         {/*  */}
         <div className="card-footer text-center">
           {creatingNote ? (
@@ -213,7 +249,7 @@ export const Notes = () => {
       {/* Modal para editar o eliminar la nota */}
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Edit Note</Modal.Title>
+          <Modal.Title>Option note</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {/* Contenido del modal para editar la nota */}
@@ -322,6 +358,34 @@ export const Notes = () => {
               </Form>
             )}
           </Formik>
+        </Modal.Body>
+      </Modal>
+      {/*    */}
+      <Modal show={showModalCategory} onHide={handleCloseModalCategory}>
+        <Modal.Header closeButton>
+          <Modal.Title>List Category</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {Array.isArray(store.categoryList) &&
+          store.categoryList.length > 0 ? (
+            store.categoryList.map((category, id) => (
+              <li
+                key={id}
+                className="list-group-item d-flex justify-content-between align-items-center rounded my-2"
+                style={{
+                  border: `2px solid ${category.color}`,
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  handleNotesCategory(category.id);
+                }}
+              >
+                <pre className="fs-5 mb-0">{category.name}</pre>
+              </li>
+            ))
+          ) : (
+            <p className="text-center">No hay categorías disponibles</p>
+          )}
         </Modal.Body>
       </Modal>
     </div>

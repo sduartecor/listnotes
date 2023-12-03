@@ -49,10 +49,10 @@ export const Category = () => {
     }
   };
 
-  const handleDeleteNote = async (noteId) => {
+  const handleDeleteCategory = async (categoryId) => {
     try {
       // Realiza la lógica asíncrona aquí para eliminar la nota
-      await actions.deleteNote(noteId);
+      await actions.deleteCategory(categoryId);
       actions.getCategory();
     } catch (error) {
       console.error(error);
@@ -66,28 +66,28 @@ export const Category = () => {
   return (
     <div className="container sizeAuto d-flex align-items-center">
       <div className="w-50 h-100 my-5 mx-auto card shadow-lg rounded">
-        <div className="card-header">
-          <h3 className="card-title text-center">List</h3>
-        </div>
-        <div className="card-body">
-          <div className="card-body">
-            {Array.isArray(store.categoryList) &&
-            store.categoryList.length > 0 ? (
-              store.categoryList.map((item, id) => (
-                <li
-                  key={id}
-                  className="list-group-item d-flex justify-content-between align-items-center rounded my-2 "
-                  style={{
-                    border: `2px solid ${item.color}`,
-                  }}
-                >
-                  <pre className="fs-5 mb-0">{item.name}</pre>
-                </li>
-              ))
-            ) : (
-              <p className="text-center">No hay categorias disponibles</p>
-            )}
-          </div>
+        <div className="card-body scrollBar">
+          {Array.isArray(store.categoryList) &&
+          store.categoryList.length > 0 ? (
+            store.categoryList.map((item, id) => (
+              <li
+                key={id}
+                className="list-group-item d-flex justify-content-between align-items-center rounded my-2 "
+                style={{
+                  border: `2px solid ${item.color}`,
+                }}
+              >
+                <pre className="fs-5 mb-0">{item.name}</pre>
+                <button
+                  type="button"
+                  className="btn-close border-0 float-end"
+                  onClick={() => handleDeleteCategory(item.id)}
+                ></button>
+              </li>
+            ))
+          ) : (
+            <p className="text-center">No hay categorias disponibles</p>
+          )}
         </div>
         {/*  */}
         <div className="card-footer text-center">

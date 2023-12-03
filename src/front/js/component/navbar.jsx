@@ -88,11 +88,6 @@ export const Navbar = () => {
                     {store.profile.firstname}
                   </button>
                   <ul className="dropdown-menu dropdown-menu-end">
-                    <Link to={"/profile"}>
-                      <button className="dropdown-item float-start">
-                        Mi perfil
-                      </button>
-                    </Link>
                     <button
                       className="dropdown-item float-start text-danger"
                       onClick={handleLogout}

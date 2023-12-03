@@ -1,9 +1,18 @@
-import React, { Component } from "react";
+import React from "react";
 
-export const Footer = () => (
-  <footer className="footer mt-auto py-3 text-center">
-    <p>
-      Made with <i className="fa fa-heart text-danger" /> by{" "}
-    </p>
-  </footer>
-);
+export const Footer = () => {
+  return (
+    <footer className="text-center mt-5 border-top">
+      <p>
+        Created by{" "}
+        <a
+          href="https://github.com/sduartecor"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Santiago
+        </a>
+      </p>
+    </footer>
+  );
+};

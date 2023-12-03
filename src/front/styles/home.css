@@ -9,3 +9,8 @@
 .custom-modal {
   background: none; /* Elimina el fondo oscuro */
 }
+
+.scrollBar {
+  overflow-y: scroll;
+  height: 55vh;
+}

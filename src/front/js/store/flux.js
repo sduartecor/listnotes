@@ -473,7 +473,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           ) {
             Swal.fire({
               icon: "success",
-              title: "¡Nota creada!",
+              title: "¡Categoria agregada!",
               text: "La categoria se ha asignado exitosamente.",
             });
           }
@@ -486,6 +486,112 @@ const getState = ({ getStore, getActions, setStore }) => {
               text: error.response.data.msg,
             });
           }
+        }
+      },
+      deleteCategory: async (categoryId) => {
+        try {
+          const response = await axios.delete(
+            `${process.env.BACKEND_URL}/api/category/${categoryId}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+              },
+            }
+          );
+
+          if (response.status === 200) {
+            setStore((prevStore) => ({
+              ...prevStore,
+              categoryList: prevStore.categoryList.filter(
+                (category) => category.id !== categoryId
+              ),
+            }));
+
+            Swal.fire({
+              icon: "success",
+              title: "¡Bien hecho!",
+              text: "Categoria eliminada con éxito",
+            });
+
+            return true;
+          } else {
+            console.error(`Error ${response.status}: ${response.statusText}`);
+            Swal.fire({
+              icon: "error",
+              title: "¡Algo anduvo mal!",
+              text: `Error ${response.status}: ${response.statusText}`,
+            });
+            return false;
+          }
+        } catch (err) {
+          console.error("Error en la solicitud:", err);
+          Swal.fire({
+            icon: "error",
+            title: "¡Algo anduvo mal!",
+            text: "Error en la solicitud",
+          });
+          return false;
+        }
+      },
+      deleteNoteCategory: async (note_id, category_id) => {
+        let accessToken = localStorage.getItem("token");
+        try {
+          const response = await axios.post(
+            process.env.BACKEND_URL + "/api/category/note/remove",
+            {
+              note_id: note_id,
+              category_id: category_id,
+            },
+            {
+              headers: {
+                "Access-Control-Allow-Origin": "*",
+                Authorization: "Bearer " + accessToken,
+              },
+            }
+          );
+
+          if (
+            response.data.msg ===
+            "Nota desvinculada de la categoría exitosamente."
+          ) {
+            Swal.fire({
+              icon: "success",
+              title: "¡Categoria desvinculada!",
+              text: "La categoria se ha desvinculado exitosamente.",
+            });
+          }
+          return response.data.msg;
+        } catch (error) {
+          if (error.response.status === 400) {
+            Swal.fire({
+              icon: "error",
+              title: "¡Algo anduvo mal!",
+              text: error.response.data.msg,
+            });
+          }
+        }
+      },
+      getNotesCategory: async (categoryId) => {
+        let accessToken = localStorage.getItem("token");
+        try {
+          const response = await axios.get(
+            `${process.env.BACKEND_URL}/api/category/note/${categoryId}`,
+            {
+              headers: {
+                "Access-Control-Allow-Origin": "*",
+                Authorization: "Bearer " + accessToken,
+              },
+            }
+          );
+          if (response.data != null) {
+            setStore({
+              notesActive: response.data,
+            });
+          }
+          return;
+        } catch (e) {
+          return false;
         }
       },
 

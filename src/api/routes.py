@@ -248,6 +248,23 @@ def getCategory():
 
     return jsonify(all_category), 200
 
+@api.route('/category/<int:category_id>', methods=['DELETE'])
+def delete_category(category_id):
+    category = Category.query.get(category_id)
+
+    # Verificar si la nota existe
+    if not category:
+        return jsonify({"error": "La categoria no existe"}), 404
+
+    # Eliminar la nota de la base de datos
+    db.session.delete(category)
+    db.session.commit()
+
+    response_body = {
+        "msg": "La categoria fue eliminada con éxito"
+    }
+    return jsonify(response_body), 200
+
 # Add category to note
 @api.route('/category/note', methods=['POST'])
 @jwt_required()
@@ -277,3 +294,54 @@ def categoryNote():
             "msg": "Nota vinculada a la categoría exitosamente."
     }
     return jsonify(response_body), 200
+
+# Remove category from note
+@api.route('/category/note/remove', methods=['POST'])
+@jwt_required()
+def remove_category_from_note():
+    current_user_id = get_jwt_identity()
+
+    # Asegurarse de que la solicitud contenga los datos necesarios
+    data = request.get_json()
+    note_id = data.get('note_id')
+    category_id = data.get('category_id')
+
+    if not note_id or not category_id:
+        return jsonify({"mensaje": "Se requieren tanto 'note_id' como 'category_id'."}), 400
+
+    # Verificar si la nota y la categoría existen y pertenecen al usuario actual
+    note = Note.query.filter_by(id=note_id, user_id=current_user_id).first()
+    category = Category.query.filter_by(id=category_id, user_id=current_user_id).first()
+
+    if not note or not category:
+        return jsonify({"mensaje": "Nota o categoría no encontrada o no pertenece al usuario."}), 404
+
+    # Desvincular la nota de la categoría
+    note.categories.remove(category)
+    db.session.commit()
+
+    response_body = {
+            "msg": "Nota desvinculada de la categoría exitosamente."
+    }
+    return jsonify(response_body), 200
+
+# Obtener notas por categoría
+@api.route('/category/note/<int:category_id>', methods=['GET'])
+@jwt_required()
+def get_notes_by_category(category_id):
+    current_user_id = get_jwt_identity()
+
+    # Verificar si la categoría existe y pertenece al usuario actual
+    category = Category.query.filter_by(id=category_id, user_id=current_user_id).first()
+
+    if not category:
+        return jsonify({"mensaje": "Categoría no encontrada o no pertenece al usuario."}), 404
+
+    # Obtener las notas asociadas a la categoría
+    notes = category.notes
+
+    # Estructurar la respuesta como un array similar al de getNotesArchived
+    all_notes = list(map(lambda item: item.serialize(), notes))
+
+
+    return jsonify(all_notes), 200

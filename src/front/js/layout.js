@@ -16,8 +16,6 @@ import { Footer } from "./component/footer.jsx";
 const Layout = () => {
   const basename = process.env.BASENAME || "";
 
-  console.log("BASENAME:", basename);
-
   return (
     <div>
       <BrowserRouter basename={basename}>

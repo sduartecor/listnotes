@@ -58,56 +58,51 @@ export const Archived = () => {
   return (
     <div className="container sizeAuto d-flex align-items-center">
       <div className="w-50 h-100 my-5 mx-auto card shadow-lg rounded">
-        <div className="card-header">
-          <h3 className="card-title text-center">List</h3>
-        </div>
-        <div className="card-body">
-          <div className="card-body">
-            {Array.isArray(store.notesArchived) &&
-            store.notesArchived.length > 0 ? (
-              store.notesArchived.map((item, id) => (
-                <li
-                  key={id}
-                  className="list-group-item d-flex justify-content-between align-items-center rounded my-2 border border-black"
-                  onClick={() => handleNoteClick(item)}
-                  style={{ cursor: "pointer", position: "relative" }}
-                >
-                  <pre className="fs-5 mb-0">{item.content}</pre>
+        <div className="card-body scrollBar">
+          {Array.isArray(store.notesArchived) &&
+          store.notesArchived.length > 0 ? (
+            store.notesArchived.map((item, id) => (
+              <li
+                key={id}
+                className="list-group-item d-flex justify-content-between align-items-center rounded my-2 border border-black"
+                onClick={() => handleNoteClick(item)}
+                style={{ cursor: "pointer", position: "relative" }}
+              >
+                <pre className="fs-5 mb-0">{item.content}</pre>
 
-                  {/*  */}
-                  {item.categories && item.categories.length > 0 && (
-                    <div
-                      className="category-circles"
-                      style={{
-                        position: "absolute",
-                        top: "50%",
-                        right: "-1px",
-                        transform: "translateY(-50%)",
-                        display: "flex",
-                      }}
-                    >
-                      {item.categories.map((category, index) => (
-                        <div
-                          key={index}
-                          className="circle"
-                          style={{
-                            width: "12px",
-                            height: "12px",
-                            borderRadius: "50%",
-                            backgroundColor: category.color,
-                            marginRight: "5px",
-                          }}
-                        ></div>
-                      ))}
-                    </div>
-                  )}
-                  {/*  */}
-                </li>
-              ))
-            ) : (
-              <p className="text-center">No hay notas disponibles</p>
-            )}
-          </div>
+                {/*  */}
+                {item.categories && item.categories.length > 0 && (
+                  <div
+                    className="category-circles"
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      right: "-1px",
+                      transform: "translateY(-50%)",
+                      display: "flex",
+                    }}
+                  >
+                    {item.categories.map((category, index) => (
+                      <div
+                        key={index}
+                        className="circle"
+                        style={{
+                          width: "12px",
+                          height: "12px",
+                          borderRadius: "50%",
+                          backgroundColor: category.color,
+                          marginRight: "5px",
+                        }}
+                      ></div>
+                    ))}
+                  </div>
+                )}
+                {/*  */}
+              </li>
+            ))
+          ) : (
+            <p className="text-center">No hay notas disponibles</p>
+          )}
         </div>
         {/*  */}
       </div>
