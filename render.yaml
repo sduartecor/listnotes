@@ -24,10 +24,7 @@ services:
       - key: FLASK_APP_KEY
         value: any key works
       - key: BACKEND_URL
-        value: envVars:
-      - key: BACKEND_URL
         value: https://page-notes.onrender.com # Reemplaza con la URL correcta de tu backend en Render
-
 
 databases: # Render PostgreSQL database
   - name: postgresql-trapezoidal-42170
