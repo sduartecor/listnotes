@@ -60,3 +60,26 @@ The site has a registration method, you can use it to create an account and use 
 
 The configuration of the environment can be lengthy, so the use of the deployed page is recommended:
 Link: https://page-notes.onrender.com/
+
+### Explication of the page:
+
+1. Creating and Viewing Notes:
+
+- When you load the page, you can see a list of existing notes.
+- You can create a new note by clicking on the "Create Note" button.
+- Each note displays its contents, and you can click on a note to see more options.
+
+2. Editing and Deleting Notes:
+
+- Clicking on a note will open a modal that allows you to edit its contents.
+- You can update the content of the note and save the changes.
+  You can also archive the note or delete it permanently.
+
+3. Viewing by Categories:
+
+- You can click on "List for category" to view the notes associated with a specific category.
+
+4. Category Management:
+
+- You can add categories to your notes from the edit modal by clicking on the note.
+- You can also remove categories associated to a note by clicking on the colored circle of the category you want to remove from the note.
