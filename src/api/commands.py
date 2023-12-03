@@ -20,9 +20,11 @@ def setup_commands(app):
         print("Creating test users")
         for x in range(1, int(count) + 1):
             user = User()
+            user.firstname = "user" + str(x)
+            user.lastname = "user" + str(x)
             user.email = "test_user" + str(x) + "@test.com"
             user.password = "123456"
-            user.is_active = True
+            user.contact = "099999" + str(x)
             db.session.add(user)
             db.session.commit()
             print("User: ", user.email, " created.")
