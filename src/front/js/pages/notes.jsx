@@ -101,8 +101,8 @@ export const Notes = () => {
   const handleRemoveCategory = async (noteId, categoryId) => {
     try {
       await actions.deleteNoteCategory(noteId, categoryId);
-      actions.getNotesActive();
       setShowModal(false);
+      actions.getNotesActive();
     } catch (error) {
       console.error(error);
     }

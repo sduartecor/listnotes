@@ -51,6 +51,26 @@ export const Archived = () => {
     }
   };
 
+  const addNoteCategory = async (note_id, category_id) => {
+    try {
+      await actions.addNoteCategory(note_id, category_id);
+      actions.getNotesArchived();
+      setShowModal(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleRemoveCategory = async (noteId, categoryId) => {
+    try {
+      await actions.deleteNoteCategory(noteId, categoryId);
+      setShowModal(false);
+      actions.getNotesArchived();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const lostSchema = Yup.object().shape({
     content: Yup.string().required("Please enter some content for the note."),
   });
@@ -93,6 +113,9 @@ export const Archived = () => {
                           backgroundColor: category.color,
                           marginRight: "5px",
                         }}
+                        onClick={() =>
+                          handleRemoveCategory(item.id, category.id)
+                        }
                       ></div>
                     ))}
                   </div>
