@@ -585,8 +585,11 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           );
           if (response.data != null) {
+            // Aplicar filtro en el frontend para obtener solo las notas activas
+            const activeNotes = response.data.filter((note) => !note.archived);
+
             setStore({
-              notesActive: response.data,
+              notesActive: activeNotes,
             });
           }
           return;
